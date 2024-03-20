@@ -1,0 +1,117 @@
+#!/bin/bash
+
+# Prompt the user to enter employee information
+read -p "Enter employee's name: " name            # Prompt for the employee's name and store it in the variable 'name'
+read -p "Enter hours worked: " hours_worked      # Prompt for hours worked and store it in the variable 'hours_worked'
+read -p "Enter rate per hour: " rate_per_hour    # Prompt for rate per hour and store it in the variable 'rate_per_hour'
+
+# Calculate basic pay
+basic_pay=$(echo "scale=2; $hours_worked * $rate_per_hour" | bc)
+
+# Calculate tax based on basic pay
+if (( $(echo "$basic_pay > 70000" | bc -l) )); then
+    tax=$(echo "scale=2; 0.25 * $basic_pay" | bc)
+elif (( $(echo "$basic_pay >= 15000 && $basic_pay <= 70000" | bc -l) )); then
+    tax=$(echo "scale=2; 0.15 * $basic_pay" | bc)
+else
+    tax=0
+fi
+
+# Calculate net pay
+net_pay=$(echo "scale=2; $basic_pay - $tax" | bc)
+
+# Display the entered information
+echo "Employee's Name: $name"                    # Print the employee's name
+echo "Hours Worked: $hours_worked"               # Print the hours worked
+echo "Rate Per Hour: $rate_per_hour"             # Print the rate per hour
+echo "Basic Pay: $basic_pay"                     # Print the basic pay
+echo "Tax: $tax"                                 # Print the tax
+echo "Net Pay: $net_pay"                         # Print the net pay
+
+
+2.QUESTION TWO.
+#include <stdio.h>   // Include standard I/O library for file operations
+
+int main() {
+    FILE *file_pointer;  // Declare a file pointer
+
+    // Open a file named "example.txt" in write mode ("w")
+    file_pointer = fopen("example.txt", "w");
+
+    // Check if the file opened successfully
+    if (file_pointer == NULL) {
+        printf("Failed to open the file.\n");
+        return 1;  // Return an error code
+    }
+
+    // Write "Hello World" to the file
+    fprintf(file_pointer, "Hello World\n");
+
+    // Close the file
+    fclose(file_pointer);
+
+    // Open the file in read mode ("r")
+    file_pointer = fopen("example.txt", "r");
+
+    // Check if the file opened successfully
+    if (file_pointer == NULL) {
+        printf("Failed to open the file for reading.\n");
+        return 1;  // Return an error code
+    }
+
+    char content[100];  // Buffer to store the read content
+
+    // Read content from the file
+    fgets(content, sizeof(content), file_pointer);
+
+    // Print the read content
+    printf("Content read from the file: %s", content);
+
+    // Close the file
+    fclose(file_pointer);
+
+    return 0;  // Return success
+}
+
+
+3.QUESTION 3
+
+#!/bin/bash
+
+# Prompt the user to enter customer information
+read -p "Enter Customer ID: " customer_id        # Prompt for customer ID and store it in the variable 'customer_id'
+read -p "Enter Customer Name: " customer_name   # Prompt for customer name and store it in the variable 'customer_name'
+read -p "Enter Units Consumed: " units_consumed # Prompt for units consumed and store it in the variable 'units_consumed'
+
+# Define charging rates and surcharges
+charge_1=120   # Charges per unit for consumption upto 199 units
+charge_2=150   # Charges per unit for consumption between 200 and 399 units
+charge_3=600   # Charges per unit for consumption between 400 and 599 units
+charge_4=200   # Charges per unit for consumption of 600 units and above
+
+# Initialize total bill variable
+total_bill=0
+
+# Calculate the bill based on the units consumed
+if [ $units_consumed -lt 200 ]; then
+    total_bill=$(($units_consumed * $charge_1))
+elif [ $units_consumed -ge 200 ] && [ $units_consumed -lt 400 ]; then
+    total_bill=$((199 * $charge_1 + ($units_consumed - 199) * $charge_2))
+elif [ $units_consumed -ge 400 ] && [ $units_consumed -lt 600 ]; then
+    total_bill=$((199 * $charge_1 + 200 * $charge_2 + ($units_consumed - 399) * $charge_3))
+else
+    total_bill=$((199 * $charge_1 + 200 * $charge_2 + 200 * $charge_3 + ($units_consumed - 599) * $charge_4))
+fi
+
+# Apply surcharge if necessary
+if [ $units_consumed -gt 180 ]; then
+    surcharge_percentage=0.1  # 10% surcharge if units consumed exceed 180
+    surcharge=$(echo "scale=2; $total_bill * $surcharge_percentage" | bc)
+    total_bill=$(echo "$total_bill + $surcharge" | bc)
+fi
+
+# Display the calculated bill
+echo "Customer ID: $customer_id"
+echo "Customer Name: $customer_name"
+echo "Units Consumed: $units_consumed"
+echo "Total Bill (Ksh): $total_bill"
